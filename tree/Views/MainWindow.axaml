@@ -1,0 +1,96 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:tree.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:tree="clr-namespace:tree"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="tree.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="tree">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+    
+    <Window.Resources>
+        <tree:TreeLevelPaddingConverter x:Key="PaddingConverter" />
+        <tree:MultibindingConverter x:Key="MultibindingConverter" />
+    </Window.Resources>
+
+    <Grid>
+         <ListBox
+             x:Name="Repeater"
+             Classes="tree"
+             Items="{Binding TreeRoot.VisibleChildren}"
+             SelectedItem="{Binding SelectedItem}">
+             <ListBox.ItemTemplate>
+                 <DataTemplate>
+                     <Border
+                         Name="VisibleChildrenContent"
+                         Padding="{Binding Level, Converter={StaticResource PaddingConverter}}"
+                         Background="Transparent"
+                         BorderBrush="Transparent"
+                         BorderThickness="1"
+                         CornerRadius="1">
+                         <StackPanel Orientation="Horizontal">
+                             <Grid>
+                                 <Image
+                                     Grid.Row="0"
+                                     Width="15"
+                                     Height="15"
+                                     IsVisible="{Binding IsExpanded}">
+                                     <Image.Source>
+                                         <SvgImage Source="/Assets/Icons/tree_open_icon.svg" />
+                                     </Image.Source>
+                                 </Image>
+
+                                 <Image
+                                     Grid.Row="0"
+                                     Width="15"
+                                     Height="15"
+                                     IsVisible="{Binding !IsExpanded}">
+                                     <Image.Source>
+                                         <SvgImage Source="/Assets/Icons/tree_close_icon.svg" />
+                                     </Image.Source>
+                                 </Image>
+                             </Grid>
+                             <StackPanel Background="Transparent" Orientation="Horizontal">
+                                 <Grid ColumnDefinitions="*,*">
+                                     <TextBlock
+                                         Grid.Column="0"
+                                         Margin="3"
+                                         FontFamily="Roboto, Helvetica, Arial, sans-serif"
+                                         FontSize="13"
+                                         FontWeight="Bold"
+                                         Text="{Binding Part}" />
+                                     <TextBlock
+                                         Grid.Column="1"
+                                         Margin="3"
+                                         FontFamily="Roboto, Helvetica, Arial, sans-serif"
+                                         FontSize="12"
+                                         FontWeight="Light"
+                                         Foreground="Gray">
+                                         <TextBlock.Text>
+                                             <MultiBinding Converter="{StaticResource MultibindingConverter}">
+                                                 <Binding Path="TopicsCount" />
+                                                 <Binding Path="MessagesCount" />
+                                                 <Binding Path="UiHistoryCounter" />
+                                             </MultiBinding>
+                                         </TextBlock.Text>
+                                     </TextBlock>
+                                 </Grid>
+                                 <Interaction.Behaviors>
+                                     <EventTriggerBehavior EventName="Tapped" SourceObject="{Binding #VisibleChildrenContent}">
+                                         <InvokeCommandAction Command="{Binding $parent[ListBox].DataContext.ChangeNodeExpandedValueCommand}" />
+                                     </EventTriggerBehavior>
+                                 </Interaction.Behaviors>
+                             </StackPanel>
+                         </StackPanel>
+                     </Border>
+                 </DataTemplate>
+             </ListBox.ItemTemplate>
+         </ListBox>
+    </Grid>
+
+</Window>
