@@ -23,7 +23,7 @@ namespace tree.ViewModels
 
             foreach (var str in arr)
             {
-                root.Add(str.Split('/'));
+                root.Add(str.Split('/'), "fakeObject");
             }
 
             TreeRoot = root;

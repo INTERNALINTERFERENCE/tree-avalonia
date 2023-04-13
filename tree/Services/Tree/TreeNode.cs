@@ -48,13 +48,14 @@ public class TreeNode
     }
 
     public List<TreeNode> VisibleChildren { get; set; } = new();
-    
+
+    public readonly List<string> _history = new();
     public readonly SortedDictionary<string, TreeNode> TreeChildren = new();
 
     #endregion
 
-    public bool Add( string[] subTopic )
-        => Add( subTopic, Level + 1 );
+    public bool Add( string[] subTopic, string fakeObject )
+        => Add( subTopic, Level + 1, fakeObject);
 
     public void ForceResync()
         => Root.Update();
@@ -69,11 +70,13 @@ public class TreeNode
         Dispatcher.UIThread.Post( Update, DispatcherPriority.Background );
     }
     
-    private bool Add( IReadOnlyList<string> topic, int level )
+    private bool Add( IReadOnlyList<string> topic, int level, string fakeObject )
     {
-        // тут нужно добавлять элемент в историю, предполагалось, что Add будет иметь еще один параметр T, который ляжет в историю
-        if ( level >= topic.Count )
-            return false; 
+        if (level >= topic.Count)
+        {
+            AddToHistory(fakeObject);
+            return false;
+        } 
 
         var part = topic[ level ];
 
@@ -84,7 +87,7 @@ public class TreeNode
         }
         
         MessagesCount++;
-        tree.Add( topic, level + 1 );
+        tree.Add( topic, level + 1, fakeObject);
 
         return true;
     }
@@ -117,5 +120,13 @@ public class TreeNode
     {
         AppendItems();
         this.RaisePropertyChanged( nameof( VisibleChildren ) );
+    }
+
+    private void AddToHistory(string fakeObject)
+    {
+        while (_history.Count >= 40)
+            _history.RemoveAt(0);
+
+        _history.Add(fakeObject);
     }
 }
