@@ -71,7 +71,7 @@ public class TreeNode
     
     private bool Add( IReadOnlyList<string> topic, int level )
     {
-        // тут нужно добавлять элемент в историю, предпалагалось, что Add будет иметь еще один параметр T, который ляжет в историю
+        // тут нужно добавлять элемент в историю, предполагалось, что Add будет иметь еще один параметр T, который ляжет в историю
         if ( level >= topic.Count )
             return false; 
 
